@@ -37,11 +37,12 @@ The API calls are made in this sequence when a user visits the website for thrif
       "address": "string",
       "type": "string"
   }
-  ```
+  ``
 
 ### 1.4 Get Store Description - '/stores/description/{store_id}' (GET)
   Retrieve store description by ID.
-    **Returns**:
+
+  **Returns**:
   ```json
     {
       "description": "string"
