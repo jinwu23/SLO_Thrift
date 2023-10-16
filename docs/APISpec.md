@@ -128,4 +128,8 @@ The API calls are made in this sequence when a user updates metadata about a sto
       "success": "boolean"
   }
   ```
+  {
+      "success": "boolean"
+  }
+  ```
 
