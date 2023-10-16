@@ -117,17 +117,13 @@ The API calls are made in this sequence when a user updates metadata about a sto
   A call to update descriptions for a store will add the admin description to database
   
   **Request**:
-  ```json
+  ```param
   {
   "descriptions": {description: "input"} /* dictionary of description to user input */
   }
   ```
   **Returns**:
   ```json
-  {
-      "success": "boolean"
-  }
-  ```
   {
       "success": "boolean"
   }
