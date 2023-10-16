@@ -73,7 +73,7 @@ The API calls are made in this sequence when a user updates metadata about a sto
   **Request**:
   ```json
   {
-  "descriptions" = {description: "input"} /* dictionary of description to user input */
+  "descriptions": {description: "input"} /* dictionary of description to user input */
   }
   ```
   **Returns**:
