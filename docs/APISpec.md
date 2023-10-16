@@ -14,6 +14,39 @@ The API calls are made in this sequence when a user visits the website for thrif
       "type": "string"
   }
   ```
+### 1.2 Get Store By ID - '/stores/{store_id}' (GET)
+  Retrieves the thrift store by ID. 
+
+  **Returns**:
+  ```json
+    {
+      "name": "string",
+      "rating": "integer",
+      "address": "string",
+      "type": "string"
+  }
+  ```
+### 1.3 Get Store By Name - '/stores/{store_name}' (GET)
+  Retrieves the thrift stores by name.
+
+  **Returns**:
+    ```json
+    {
+      "name": "string",
+      "rating": "integer",
+      "address": "string",
+      "type": "string"
+  }
+  ```
+
+### 1.4 Get Store Description - '/stores/description/{store_id}' (GET)
+  Retrieve store description by ID.
+    **Returns**:
+  ```json
+    {
+      "description": "string"
+  }
+  ```
 
 ## 2. User Leaving Review 
 The API calls are made in this sequence when a user leaves a review for a thrift store:
@@ -46,3 +79,4 @@ The API calls are made in this sequence when a user updates metadata about a sto
       "success": "boolean"
   }
   ```
+
