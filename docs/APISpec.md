@@ -50,9 +50,55 @@ The API calls are made in this sequence when a user visits the website for thrif
   }
   ```
 
-## 2. User Leaving Review 
-The API calls are made in this sequence when a user leaves a review for a thrift store:
+## 2. User Review 
+The API calls are made in this sequence when a user interacts with reviews for a thrift store:
+### 2.1 View a Store's reviews - `/reviews/{store_id}` (GET)
+  A call to retrieve the list of reviews for a store.
 
+  **Returns**:
+  ```json
+  {
+  "name": "string" /* Account Name */
+  "rating": "float" /* Between 1 and 5 */
+  "review": "string" /* User review of thrift store */
+  }
+  ```
+
+### 2.2 View a specific review - `/reviews/{store_id}/{review_id}` (GET)
+  A call to retrieve a review for a thrift store.
+
+  **Return**:
+  ```json
+  {
+  "rating": "integer" /* Between 1 and 5 */
+  "name": "string" /* Account Name */
+  "review": "string" /* User review of thrift store */
+  }
+  ```
+
+### 2.3 Leave a review - `/reviews/{store_id}/` (POST)
+  A call to create a new review for a thrift store.
+
+  **Request**:
+  ```json
+  {
+  "rating": "integer" /* Between 1 and 5 */
+  "name": "string" /* Account Name */
+  "review": "string" /* User review of thrift store */
+  }
+  ```
+
+### 2.4 Reply to a review - `/reviews/{store_id}/{review_id}` (POST)
+  A call to create a reply comment to review for a thrift store.
+
+  **Request**:
+  ```json
+  {
+  "rating": "integer" /* Between 1 and 5 */
+  "name": "string" /* Account Name */
+  "review": "string" /* User review of thrift store */
+  }
+  ```
 ## 3. User Updating Store Descriptions
 The API calls are made in this sequence when a user updates metadata about a store:
 
