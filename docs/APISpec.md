@@ -2,6 +2,18 @@
 
 ## 1. User Searching for Thrift Stores
 The API calls are made in this sequence when a user visits the website for thrift stores:
+### 1.1 Get Stores - `/stores/}` (GET)
+  Retrieves the catalog of thrift stores in website.
+  
+  **Returns**:
+  ```json
+  {
+      "name": "string",
+      "rating": "integer",
+      "address": "string",
+      "type": "string"
+  }
+  ```
 
 ## 2. User Leaving Review 
 The API calls are made in this sequence when a user leaves a review for a thrift store:
