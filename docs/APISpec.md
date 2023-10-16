@@ -26,18 +26,19 @@ The API calls are made in this sequence when a user visits the website for thrif
       "type": "string"
   }
   ```
+
 ### 1.3 Get Store By Name - '/stores/{store_name}' (GET)
   Retrieves the thrift stores by name.
 
   **Returns**:
-    ```json
+  ```json
     {
       "name": "string",
       "rating": "integer",
       "address": "string",
       "type": "string"
   }
-  ``
+  ```
 
 ### 1.4 Get Store Description - '/stores/description/{store_id}' (GET)
   Retrieve store description by ID.
