@@ -2,7 +2,7 @@
 
 ## 1. User Searching for Thrift Stores
 The API calls are made in this sequence when a user visits the website for thrift stores:
-### 1.1 Get Stores - `/stores/}` (GET)
+### 1.1 Get Stores - `/stores/` (GET)
   Retrieves the catalog of thrift stores in website.
   
   **Returns**:
@@ -87,6 +87,12 @@ The API calls are made in this sequence when a user interacts with reviews for a
   "review": "string" /* User review of thrift store */
   }
   ```
+**Returns**:
+  ```json
+  {
+      "success": "boolean"
+  }
+  ```
 
 ### 2.4 Reply to a review - `/reviews/{store_id}/{review_id}` (POST)
   A call to create a reply comment to review for a thrift store.
@@ -99,9 +105,12 @@ The API calls are made in this sequence when a user interacts with reviews for a
   "review": "string" /* User review of thrift store */
   }
   ```
-## 3. User Updating Store Descriptions
-The API calls are made in this sequence when a user updates metadata about a store:
-
+**Returns**:
+  ```json
+  {
+      "success": "boolean"
+  }
+  ```
 
 ## 4. Admin Functions 
 ### 4.1 Reset Reviews - `/admin/reset/{store_id}` (POST)
