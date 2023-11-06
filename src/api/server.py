@@ -4,8 +4,6 @@ from pydantic import ValidationError
 from src.api import stores
 import json
 import logging
-import sys
-from starlette.middleware.cors import CORSMiddleware
 
 description = """
     SLO thrift.
@@ -18,7 +16,7 @@ app = FastAPI(
     terms_of_service="http://example.com/terms/",
     contact={
         "name": "test",
-        "email": "test@gmailc.om",
+        "email": "jinpettit@gmail.com",
     },
 )
 

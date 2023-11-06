@@ -13,9 +13,9 @@ router = APIRouter(
 
 class Store(BaseModel):
     name: str
-    address: str
     rating: int
-    description: str
+    address: str
+    type: str
 
 @router.get("/stores/", tags=["stores"])
 def get_stores():
@@ -36,3 +36,21 @@ def get_stores():
             )
     print("get_stores")
     return stores_arr
+
+@router.post("/create_store")
+def create_store(new_store: Store):
+    """
+    Creates new thrift stores in website.
+    """
+    with db.engine.begin() as connection:
+        connection.execute(
+            sqlalchemy.text(
+                """
+                INSERT INTO stores
+                (name, rating, address, type)
+                VALUES(:name, :rating, :address, :type)
+                """
+            ),
+            [{"name": new_store.name, "rating": new_store.rating, "address": new_store.address, "type": new_store.type}]
+        )
+    return "OK"
