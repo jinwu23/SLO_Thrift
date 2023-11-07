@@ -23,7 +23,7 @@ def get_stores():
     """
     stores_arr = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT * FROM stores"))
+        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id GROUP BY stores.id"))
         for row in results:
             stores_arr.append(
                 {   
