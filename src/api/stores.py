@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
-import math
 import sqlalchemy
 from src import database as db
 
@@ -13,7 +12,6 @@ router = APIRouter(
 
 class Store(BaseModel):
     name: str
-    rating: str
     address: str
     type: str
 
@@ -24,7 +22,7 @@ def get_stores():
     """
     stores_arr = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT * FROM stores"))
+        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id GROUP BY stores.id"))
         for row in results:
             stores_arr.append(
                 {   
@@ -38,6 +36,18 @@ def get_stores():
     print("get_stores")
     return stores_arr
 
+@router.get("/{id}")
+def get_specific_store(id: int):
+    """
+    A review for a thrift store of reviews for a store.
+    """
+    with db.engine.begin() as connection:
+        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id WHERE stores.id = :id GROUP BY stores.id"), {"id": id})
+
+        review = results.fetchone()
+
+    return review
+
 @router.post("/create_store")
 def create_store(new_store: Store):
     """
@@ -48,11 +58,11 @@ def create_store(new_store: Store):
             sqlalchemy.text(
                 """
                 INSERT INTO stores
-                (name, rating, address, type)
-                VALUES(:name, :rating, :address, :type)
+                (name, address, type)
+                VALUES(:name, :address, :type)
                 """
             ),
-            [{"name": new_store.name, "rating": new_store.rating, "address": new_store.address, "type": new_store.type}]
+            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}]
         )
     return "OK"
 
@@ -71,24 +81,6 @@ def update_name(store_id: int, new_name: str):
                 """
             ),
             [{"name": new_name, "id": store_id}]
-        )
-    return "OK"
-
-@router.post("/update_rating/{store_id}")
-def update_rating(store_id: int, new_rating: int):
-    """
-    Updates the rating of specific store
-    """
-    with db.engine.begin() as connection:
-        connection.execute(
-            sqlalchemy.text(
-                """
-                UPDATE stores
-                SET rating = :rating
-                where id = :id
-                """
-            ),
-            [{"rating": new_rating, "id": store_id}]
         )
     return "OK"
 
@@ -111,7 +103,7 @@ def update_address(store_id: int, new_address: str):
     return "OK"
 
 @router.post("/update_type/{store_id}")
-def update_name(store_id: int, new_type: str):
+def update_type(store_id: int, new_type: str):
     """
     Updates the type of specific store
     """
