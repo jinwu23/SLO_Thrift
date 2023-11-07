@@ -44,16 +44,18 @@ def get_specific_rating(id: int):
     """
     A review for a thrift store of reviews for a store.
     """
+    result = {}
     with db.engine.begin() as connection:
         results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE id = :id"), {"id": id})
         review = results.fetchone()
+        if review:
+            result = {
+                "account": review.account_name,
+                "rating": review.rating,
+                "description": review.description
+            }
 
-
-    return {
-        "account": review.account_name,
-        "rating": review.rating,
-        "description": review.description
-        }
+    return result
              
 @router.post("/create_review")
 def create_review(store_id: int, new_review: Review):
