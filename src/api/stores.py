@@ -67,11 +67,11 @@ def create_store(new_store: Store):
             sqlalchemy.text(
                 """
                 INSERT INTO stores
-                (name, rating, address, type)
-                VALUES(:name, :rating, :address, :type)
+                (name, address, type)
+                VALUES(:name, :address, :type)
                 """
             ),
-            [{"name": new_store.name, "rating": new_store.rating, "address": new_store.address, "type": new_store.type}]
+            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}]
         )
     return "OK"
 
