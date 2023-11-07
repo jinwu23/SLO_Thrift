@@ -12,7 +12,6 @@ router = APIRouter(
 
 class Store(BaseModel):
     name: str
-    rating: str
     address: str
     type: str
 
@@ -38,12 +37,12 @@ def get_stores():
     return stores_arr
 
 @router.get("/{id}")
-def get_specific_store(store_id: int, id: int):
+def get_specific_store(id: int):
     """
     A review for a thrift store of reviews for a store.
     """
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id AND id = :id"), {"store_id": store_id, "id": id})
+        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id WHERE stores.id = :id GROUP BY stores.id"), {"id": id})
 
         review = results.fetchone()
 
@@ -59,11 +58,11 @@ def create_store(new_store: Store):
             sqlalchemy.text(
                 """
                 INSERT INTO stores
-                (name, rating, address, type)
-                VALUES(:name, :rating, :address, :type)
+                (name, address, type)
+                VALUES(:name, :address, :type)
                 """
             ),
-            [{"name": new_store.name, "rating": new_store.rating, "address": new_store.address, "type": new_store.type}]
+            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}]
         )
     return "OK"
 
@@ -82,24 +81,6 @@ def update_name(store_id: int, new_name: str):
                 """
             ),
             [{"name": new_name, "id": store_id}]
-        )
-    return "OK"
-
-@router.post("/update_rating/{store_id}")
-def update_rating(store_id: int, new_rating: int):
-    """
-    Updates the rating of specific store
-    """
-    with db.engine.begin() as connection:
-        connection.execute(
-            sqlalchemy.text(
-                """
-                UPDATE stores
-                SET rating = :rating
-                where id = :id
-                """
-            ),
-            [{"rating": new_rating, "id": store_id}]
         )
     return "OK"
 

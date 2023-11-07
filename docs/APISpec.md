@@ -62,25 +62,7 @@ Updates the name of specific store.
 "OK"
 ```
 
-### 1.5 Update Rating - '/stores/update_rating/{store_id}' (POST)
-
-Updates the ratings of specific store.
-
-**Request**:
-
-```json
-{
-  "ratings": "integer"
-}
-```
-
-**Returns**:
-
-```
-"OK"
-```
-
-### 1.6 Update Address - '/stores/update_address/{store_id}' (POST)
+### 1.5 Update Address - '/stores/update_address/{store_id}' (POST)
 
 Updates the address of specific store.
 
@@ -98,7 +80,7 @@ Updates the address of specific store.
 "OK"
 ```
 
-### 1.7 Update Type - '/stores/update_type/{store_id}' (POST)
+### 1.6 Update Type - '/stores/update_type/{store_id}' (POST)
 
 Updates the type of specific store.
 
@@ -193,8 +175,6 @@ A call to create a reply comment to review for a thrift store.
 ### 4.1 Reset Reviews - `/admin/reset/{store_id}` (POST)
 
 A call to reset reviews will delete all reviews under a specific store
-
-**Returns**:
 
 **Returns**:
 
