@@ -14,6 +14,10 @@ class Review(BaseModel):
     name: str
     rating: int
     description: str
+
+class Reply(BaseModel):
+    name: str
+    description: str
     
 @router.get("/{store_id}")
 def get_ratings(store_id: int):
@@ -35,7 +39,7 @@ def get_ratings(store_id: int):
 
     return reviews
 
-@router.get("/rating/{id}")
+@router.get("/{store_id}/{id}")
 def get_specific_rating(id: int):
     """
     A review for a thrift store of reviews for a store.
@@ -51,7 +55,7 @@ def get_specific_rating(id: int):
         "description": review.description
         }
              
-@router.post("/create_review")
+@router.post("/{store_id}")
 def create_review(store_id: int, new_review: Review):
     """
     Creates new thrift review in website.
@@ -66,5 +70,20 @@ def create_review(store_id: int, new_review: Review):
                 """
             ),
             [{"account_name": new_review.name, "rating": new_review.rating, "description": new_review.description, "store_id": store_id}]
+        )
+    return "OK"
+
+@router.post("/{id}")
+def reply_review(id: int, new_reply: Reply):
+    with db.engine.begin() as connection:
+        connection.execute(
+            sqlalchemy.text(
+                """
+                INSERT INTO replies
+                (review_id, account_name, description)
+                VALUES(:review_id, :account_name, :description)
+                """
+            ),
+            [{ "review_id": id, "account_name": new_reply.name, "description": new_reply.description}]
         )
     return "OK"
