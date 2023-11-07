@@ -25,21 +25,31 @@ def get_ratings(store_id: int):
 
         reviews = []
         for row in results:
-            reviews.append(row)
+            reviews.append(
+                {
+                    "account": row.account_name,
+                    "rating": row.rating,
+                    "description": row.description
+                }
+            )
 
     return reviews
 
-@router.get("/{store_id}/{id}")
-def get_specific_rating(store_id: int, id: int):
+@router.get("/rating/{id}")
+def get_specific_rating(id: int):
     """
     A review for a thrift store of reviews for a store.
     """
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id AND id = :id"), {"store_id": store_id, "id": id})
-
+        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE id = :id"), {"id": id})
         review = results.fetchone()
 
-    return review
+
+    return {
+        "account": review.account_name,
+        "rating": review.rating,
+        "description": review.description
+        }
              
 @router.post("/create_review")
 def create_review(store_id: int, new_review: Review):
