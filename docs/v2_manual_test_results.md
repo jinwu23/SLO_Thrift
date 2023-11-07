@@ -16,3 +16,20 @@ The description then changes and Jin is happy :)
   -d ''   
  
 2."OK"
+
+# Example workflow
+Tom is a frequent customer of Goodwill and loves their store, however, he has moved to a new area, looking for his favorite thrift store. Hoping to go on a thrifting session, he looks for nearby stores by calling GET /stores and viewing Goodwill stores nearby. He decides that he wants to visit the one with the best ratings, and visits the ratings page by calling GET /reviews/{store_id}, showing the overall rating and reviews. He leaves to go thrift and has an amazing experience, and feels the need to combat some of the poor ratings the store received. He begins to write his own review by calling POST /reviews/{store_id}/ and describing his positive experience. He is ecstatic about the potential impact of his review!
+
+# Testing results
+<Repeated for each step of the workflow>
+1. curl -X 'GET' \
+  'https://slo-thrift3.onrender.com/stores/' \
+  -H 'accept: application/json' \
+  -H 'access_token: slo-thrift-key'
+ 
+2.curl -X 'GET' \
+  ''https://slo-thrift3.onrender.com/reviews/1' \
+  -H 'accept: application/json' \
+  -H 'access_token: slo-thrift-key'
+
+3."OK"
