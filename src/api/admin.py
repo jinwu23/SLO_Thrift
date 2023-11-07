@@ -19,7 +19,7 @@ def reset(store_id: int):
     -> returns success
     """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE store_id=:id"), {"id": store_id})
+        connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE store_id=:id"), {"id": store_id})
 
     return "OK"
 
@@ -31,7 +31,7 @@ def delete_review(review_id: int):
     """
     print(review_id)
     with db.engine.begin() as connection: 
-        result = connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE id=:rev_id"), {"rev_id": review_id})
+        connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE id=:rev_id"), {"rev_id": review_id})
     return "OK"
 
 
@@ -44,5 +44,5 @@ def update_descriptions(store_id: int, desc: Description):
     """
 
     with db.engine.begin() as connection: 
-        result = connection.execute(sqlalchemy.text("UPDATE stores SET type=:desc WHERE id=:id"), {"desc": desc.description, "id": store_id})
+        connection.execute(sqlalchemy.text("UPDATE stores SET type=:desc WHERE id=:id"), {"desc": desc.description, "id": store_id})
     return "OK"

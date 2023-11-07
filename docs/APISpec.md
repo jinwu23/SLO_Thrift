@@ -134,7 +134,7 @@ A call to retrieve the list of reviews for a store.
 }
 ```
 
-### 2.2 View a specific review - `/reviews/{store_id}/{review_id}` (GET)
+### 2.2 View a specific review - `/reviews/rating/{id}` (GET)
 
 A call to retrieve a review for a thrift store.
 
@@ -148,7 +148,7 @@ A call to retrieve a review for a thrift store.
 }
 ```
 
-### 2.3 Leave a review - `/reviews/{store_id}/` (POST)
+### 2.3 Leave a review - `/reviews/create_review` (POST)
 
 A call to create a new review for a thrift store.
 
@@ -164,10 +164,8 @@ A call to create a new review for a thrift store.
 
 **Returns**:
 
-```json
-{
-  "success": "boolean"
-}
+```
+"OK"
 ```
 
 ### 2.4 Reply to a review - `/reviews/{store_id}/{review_id}` (POST)
@@ -186,10 +184,8 @@ A call to create a reply comment to review for a thrift store.
 
 **Returns**:
 
-```json
-{
-  "success": "boolean"
-}
+```
+"OK"
 ```
 
 ## 4. Admin Functions
@@ -200,13 +196,23 @@ A call to reset reviews will delete all reviews under a specific store
 
 **Returns**:
 
-```json
-{
-  "success": "boolean"
-}
+**Returns**:
+
+```
+"OK"
 ```
 
-### 4.2 Update Descriptions - `/admin/update/description/{store_id}` (POST)
+### 4.2 Reset Specific Review - `/admin/reset/{review_id}` (POST)
+
+A call to reset specific review will delete one specific review
+
+**Returns**:
+
+```
+"OK"
+```
+
+### 4.3 Update Descriptions - `/admin/update/description/{store_id}` (POST)
 
 A call to update descriptions for a store will add the admin description to database
 
