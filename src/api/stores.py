@@ -110,7 +110,7 @@ def update_address(store_id: int, new_address: str):
     return "OK"
 
 @router.post("/update_type/{store_id}")
-def update_name(store_id: int, new_type: str):
+def update_type(store_id: int, new_type: str):
     """
     Updates the type of specific store
     """
