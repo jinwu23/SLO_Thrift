@@ -19,7 +19,7 @@ Retrieves the catalog of thrift stores in website.
 }
 ```
 
-### 1.2 Get Store By ID - '/stores/{store_id}' (GET)
+### 1.2 Get Store By ID - '/stores/{id}' (GET)
 
 Retrieves the thrift store by ID.
 
@@ -62,7 +62,7 @@ Updates the name of specific store.
 "OK"
 ```
 
-### 1.5 Update Ratings - '/stores/update_rating/{store_id}' (POST)
+### 1.5 Update Rating - '/stores/update_rating/{store_id}' (POST)
 
 Updates the ratings of specific store.
 
@@ -80,7 +80,7 @@ Updates the ratings of specific store.
 "OK"
 ```
 
-### 1.6 Update address - '/stores/update_address/{store_id}' (POST)
+### 1.6 Update Address - '/stores/update_address/{store_id}' (POST)
 
 Updates the address of specific store.
 
@@ -98,7 +98,7 @@ Updates the address of specific store.
 "OK"
 ```
 
-### 1.7 Update type - '/stores/update_type/{store_id}' (POST)
+### 1.7 Update Type - '/stores/update_type/{store_id}' (POST)
 
 Updates the type of specific store.
 

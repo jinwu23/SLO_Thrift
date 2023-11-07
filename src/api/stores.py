@@ -37,6 +37,18 @@ def get_stores():
     print("get_stores")
     return stores_arr
 
+@router.get("/{id}")
+def get_specific_store(store_id: int, id: int):
+    """
+    A review for a thrift store of reviews for a store.
+    """
+    with db.engine.begin() as connection:
+        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id AND id = :id"), {"store_id": store_id, "id": id})
+
+        review = results.fetchone()
+
+    return review
+
 @router.post("/create_store")
 def create_store(new_store: Store):
     """
