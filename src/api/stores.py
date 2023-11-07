@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
+import math
 import sqlalchemy
 from src import database as db
 
@@ -39,14 +40,22 @@ def get_stores():
 @router.get("/{id}")
 def get_specific_store(id: int):
     """
-    A review for a thrift store of reviews for a store.
+    Get a specific thrift store given id
     """
     with db.engine.begin() as connection:
         results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id WHERE stores.id = :id GROUP BY stores.id"), {"id": id})
-
-        review = results.fetchone()
-
-    return review
+        row = results.fetchone()
+        if row:
+            store_stats = {
+                "id": row.id,
+                "name": row.name,
+                "rating": row.rating,
+                "address": row.address,
+                "type": row.type,
+            }
+        else:
+            store_stats = {}
+    return store_stats
 
 @router.post("/create_store")
 def create_store(new_store: Store):
