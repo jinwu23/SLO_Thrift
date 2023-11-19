@@ -23,7 +23,15 @@ def get_stores():
     """
     stores_arr = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id GROUP BY stores.id"))
+        results = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT stores.id, stores.name, 
+                stores.address, stores.type, AVG(reviews.rating) 
+                as rating FROM stores 
+                JOIN reviews on reviews.store_id = stores.id 
+                GROUP BY stores.id
+                """))
         for row in results:
             stores_arr.append(
                 {   
@@ -43,7 +51,15 @@ def get_specific_store(id: int):
     Get a specific thrift store given id
     """
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id WHERE stores.id = :id GROUP BY stores.id"), {"id": id})
+        results = connection.execute(
+            sqlalchemy.text(
+                """SELECT stores.id, stores.name, 
+                stores.address, stores.type, AVG(reviews.rating)
+                as rating FROM stores 
+                JOIN reviews on reviews.store_id = stores.id 
+                WHERE stores.id = :id 
+                GROUP BY stores.id"""), 
+                {"id": id})
         row = results.fetchone()
         if row:
             store_stats = {

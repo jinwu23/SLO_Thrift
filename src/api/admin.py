@@ -16,7 +16,6 @@ class Description(BaseModel):
 def reset(store_id: int):
     """
     a call to reset reviews will delete all reviews under a specific store
-    -> returns success
     """
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE store_id=:id"), {"id": store_id})
@@ -27,7 +26,6 @@ def reset(store_id: int):
 def delete_review(review_id: int): 
     """
     a call to delete a specific review
-    -> returns success
     """
     print(review_id)
     with db.engine.begin() as connection: 
@@ -40,7 +38,6 @@ def update_descriptions(store_id: int, desc: Description):
     """ 
     a call to update descriptions for a store will add the admin description
     to database
-    -> returns success
     """
 
     with db.engine.begin() as connection: 
