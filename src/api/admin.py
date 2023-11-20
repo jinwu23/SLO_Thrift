@@ -12,6 +12,15 @@ router = APIRouter(
 class Description(BaseModel):
     description: str
 
+@router.delete("/store/{store_id}")
+def delete_store(store_id: int):
+    """
+    a call to delete store will delete the selected store
+    """
+    with db.engine.begin() as connection: 
+        connection.execute(sqlalchemy.text("DELETE FROM stores where id=:id"),{"id":store_id})
+    return "OK"
+
 @router.delete("/reset/{store_id}")
 def reset(store_id: int):
     """

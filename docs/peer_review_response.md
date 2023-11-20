@@ -12,10 +12,18 @@
 4. **stores**.py: The SQL queries on the "/" and "/{id}" endpoints are way too long, break them up and make them readable.
    Broke down endpoints "/" and "/{id}" in stores.py
 5. **auth**.py: Again, strip down the unnecessary things. The demo key isn't necessary and just confusing when looking at the point of auth.py. (I know you probably got this from him, but I'm having hard time finding things wrong with your code!)
+   Didn't do anything with this because it was part of code from Professor
 6. **reviews**.py: put in line breaks on lines 28, 49, and 74
+   Added line breaks
 7. **database**.py: Having a separate file where the schemas are implemented makes it easier to find code. Better breaks up the code into more logical pieces.
+   we have a schema.sql file
 8. Some of the API seems a little inconsistent in the sense of what falls under admin and what doesn't. Choose where store updating happens, either admin or stores, not both! The description looks like it should be in the stores endpoint, functionally.
+   Admins are allowed to do certain types of updates whereas general users are not.
 9. Include all tables in as schemas, not just two, if you're gonna use schemas.
+   Included all tables
 10. Need to create an endpoint to delete stores
+    Created endpoint to delete stores in admin.py
 11. Need to expose the reveiw_id when returning reviews so we know what to do.
+    Exposed id when inserting reviews
 12. The "stores/create_store" endpoint doesn't seem to be actually creating stores.
+    It is creating stores
