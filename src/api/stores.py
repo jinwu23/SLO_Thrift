@@ -23,8 +23,18 @@ def get_stores():
     """
     stores_arr = []
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id GROUP BY stores.id"))
+        results = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT stores.id, stores.name, 
+                stores.address, stores.type, AVG(reviews.rating) 
+                as rating FROM stores 
+                LEFT JOIN reviews on reviews.store_id = stores.id 
+                GROUP BY stores.id
+                """))
+        results = results.fetchall()
         for row in results:
+            print(row.name)
             stores_arr.append(
                 {   
                     "id": row.id,
@@ -43,7 +53,15 @@ def get_specific_store(id: int):
     Get a specific thrift store given id
     """
     with db.engine.begin() as connection:
-        results = connection.execute(sqlalchemy.text("SELECT stores.id, stores.name, stores.address, stores.type, AVG(reviews.rating) as rating FROM stores JOIN reviews on reviews.store_id = stores.id WHERE stores.id = :id GROUP BY stores.id"), {"id": id})
+        results = connection.execute(
+            sqlalchemy.text(
+                """SELECT stores.id, stores.name, 
+                stores.address, stores.type, AVG(reviews.rating)
+                as rating FROM stores 
+                LEFT JOIN reviews on reviews.store_id = stores.id 
+                WHERE stores.id = :id 
+                GROUP BY stores.id"""), 
+                {"id": id})
         row = results.fetchone()
         if row:
             store_stats = {
@@ -63,16 +81,31 @@ def create_store(new_store: Store):
     Creates new thrift stores in website.
     """
     with db.engine.begin() as connection:
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                BEGIN;
+                INSERT INTO stores
+                (name, address, type)
+                VALUES(:name, :address, :type) 
+                RETURNING id;
+                """
+            ),
+            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}])
+        store_id = result.scalar()
+        print(store_id)
+        print("trying to insert into reviews")
         connection.execute(
             sqlalchemy.text(
                 """
-                INSERT INTO stores
-                (name, address, type)
-                VALUES(:name, :address, :type)
+                INSERT INTO reviews
+                (account_name, rating, description, store_id)
+                VALUES(:account_name, :rating, :description, :store_id);
+                COMMIT;
                 """
             ),
-            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}]
-        )
+        {"account_name": "init", "rating": None, "description": "init", "store_id": store_id})
+        
     return "OK"
 
 @router.post("/update_name/{store_id}")

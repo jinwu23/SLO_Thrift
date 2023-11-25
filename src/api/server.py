@@ -7,7 +7,6 @@ from src.api import admin
 import json
 import logging
 import sys
-from starlette.middleware.cors import CORSMiddleware
 
 description = """
     SLO thrift.
@@ -27,10 +26,6 @@ app = FastAPI(
 app.include_router(stores.router)
 app.include_router(review.router)
 app.include_router(admin.router)
-#app.include_router(catalog.router)
-#app.include_router(bottler.router)
-#app.include_router(barrels.router)
-#app.include_router(admin.router)
 
 @app.exception_handler(exceptions.RequestValidationError)
 @app.exception_handler(ValidationError)
