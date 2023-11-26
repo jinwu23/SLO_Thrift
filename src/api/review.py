@@ -59,7 +59,7 @@ def get_specific_rating(id: int):
 
     return result
              
-@router.post("/create_review")
+@router.post("/{store_id}")
 def create_review(store_id: int, new_review: Review):
     """
     Creates new thrift review in website.
