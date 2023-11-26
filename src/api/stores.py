@@ -33,17 +33,16 @@ def get_stores():
                 GROUP BY stores.id
                 """))
         results = results.fetchall()
-        for row in results:
-            print(row.name)
-            stores_arr.append(
+        stores_arr = [
                 {   
                     "id": row.id,
                     "name": row.name,
                     "rating": row.rating,
                     "address": row.address,
                     "type": row.type,
-                }
-            )
+                } 
+                for row in results
+                ]
     print("get_stores")
     return stores_arr
 
@@ -91,7 +90,9 @@ def create_store(new_store: Store):
                 RETURNING id;
                 """
             ),
-            [{"name": new_store.name, "address": new_store.address, "type": new_store.type}])
+            [{"name": new_store.name, 
+              "address": new_store.address, 
+              "type": new_store.type}])
         store_id = result.scalar()
         print(store_id)
         print("trying to insert into reviews")
@@ -104,60 +105,41 @@ def create_store(new_store: Store):
                 COMMIT;
                 """
             ),
-        {"account_name": "init", "rating": None, "description": "init", "store_id": store_id})
+        {"account_name": "init", 
+         "rating": None, 
+         "description": "init", 
+         "store_id": store_id})
         
     return "OK"
 
-@router.post("/update_name/{store_id}")
-def update_name(store_id: int, new_name: str):
+@router.put("/{store_id}")
+def update_store(store_id: int, attribute: str, new_attribute: str):
     """
-    Updates the name of specific store
+    Updates the name, address, or type of a specific store
     """
-    with db.engine.begin() as connection:
-        connection.execute(
-            sqlalchemy.text(
-                """
+    if attribute not in ("name", "address", "type"):
+        return "Attribute must be either: name, address, or type"
+    if attribute == "name":
+        query = """
                 UPDATE stores
-                SET name = :name
+                SET name = :new_attribute
                 where id = :id
                 """
-            ),
-            [{"name": new_name, "id": store_id}]
-        )
-    return "OK"
-
-@router.post("/update_address/{store_id}")
-def update_address(store_id: int, new_address: str):
-    """
-    Updates the address of specific store
-    """
-    with db.engine.begin() as connection:
-        connection.execute(
-            sqlalchemy.text(
-                """
+    elif attribute == "address":
+        query = """
                 UPDATE stores
-                SET address = :address
+                SET address = :new_attribute
                 where id = :id
                 """
-            ),
-            [{"address": new_address, "id": store_id}]
-        )
-    return "OK"
-
-@router.post("/update_type/{store_id}")
-def update_type(store_id: int, new_type: str):
-    """
-    Updates the type of specific store
-    """
-    with db.engine.begin() as connection:
-        connection.execute(
-            sqlalchemy.text(
-                """
+    else:
+        query = """
                 UPDATE stores
-                SET type = :type
+                SET type = :new_attribute
                 where id = :id
                 """
-            ),
-            [{"type": new_type, "id": store_id}]
+    with db.engine.begin() as connection:
+        connection.execute(
+            sqlalchemy.text(query),
+            [{"id": store_id, "attribute": attribute, "new_attribute": new_attribute}]
         )
     return "OK"
