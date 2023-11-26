@@ -119,3 +119,56 @@ curl --location --request GET 'https://slo-thrift3.onrender.com/admin/reset/3' \
 Delete Store (again would, but cannot because it doesn't exist):
 OH WAIT THEY CAN'T BECAUSE ITS IMPOSSIBLE TO DELETE STORES. Mom's Shop and Pop will cause havoc forever!
 Ian - delete store endpoint has been created
+
+
+### Peer Review Response Nicholas Hotelling
+
+# Code Review Comments:
+
+1. reveiws.py - change "/reveiws/create_review" endpoint to a post to "/reveiws/{store_id}" This follows good practices more clearly.
+
+   **Refactored create_review to /reviews/{store_id}**
+
+2. reveiws.py - add comments to each endpoint describing what the inputs, outputs, and effects are (reply reveiw has no comments)
+   
+   **Added comments to endpoints**
+   
+3. stores.py - line 26: make querys be multiple lines for clarity! this is absurdly long.
+
+   **Long queries broken up**
+
+4. stores.py - get stores endpoint: instead of the for loop, use list comprehension  
+  
+   **Implemented List comprehension for endpoint**
+
+5. stores.py - line 46: make query multiple lines for clarity!  
+
+   **Made query more clear** 
+
+6. stores.py - line 74: make the parameter binding dictionary multiple lines for clear reading  
+
+   **Made dictionaries multiple lines**
+
+7. stores.py - update_name: should be a put not a post.  
+
+   **updated name**
+
+8. stores.py -update_address: should be a put not a post.  
+
+   **updated name**
+
+9. stores.py - update_type: should be a put not a post.  
+
+   **updated name**
+
+10. stores.py - update_name, update_address, update_type should all be one put endpoint at "/stores/{store_id}", where body defines the changes  
+
+    **combined all endpoints into one: put/stores/{store_id}**
+
+11. stores.py - line 26: if a store has no reviews, it will not be shown. This is because the join from stores on reveiws will remove any stores with no reveiws.  
+
+    **Changed join to left join** 
+
+12. stores.py - line 46: again, stores with no reveiws will not appear  
+
+    **Changed join to left join**
