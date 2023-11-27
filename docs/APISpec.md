@@ -44,51 +44,17 @@ Creates a thrift store.
 "OK"
 ```
 
-### 1.4 Update Store Name - '/stores/update_name/{store_id}' (POST)
+### 1.4 Update Store - '/stores/{store_id}' (PUT)
 
-Updates the name of specific store.
-
-**Request**:
-
-```json
-{
-  "name": "string"
-}
-```
-
-**Returns**:
-
-```
-"OK"
-```
-
-### 1.5 Update Address - '/stores/update_address/{store_id}' (POST)
-
-Updates the address of specific store.
+Updates the name, address, or type of a specific store
+attribute must be either "name", "address", "type"
 
 **Request**:
 
 ```json
 {
-  "address": "string"
-}
-```
-
-**Returns**:
-
-```
-"OK"
-```
-
-### 1.6 Update Type - '/stores/update_type/{store_id}' (POST)
-
-Updates the type of specific store.
-
-**Request**:
-
-```json
-{
-  "type": "string"
+  "attribute" : "string",
+  "new_attribute" : "string"
 }
 ```
 
