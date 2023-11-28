@@ -136,6 +136,33 @@ A call to create a reply comment to review for a thrift store.
 "OK"
 ```
 
+### 2.5 Sort Reviews - `/reviews/search/{store_id}` (GET)
+
+Filter reviews 
+
+**Request**:
+
+```json
+{
+"store_id": "integer"
+"upper_rating": "integer" /* between 0 and 5 */
+"lower_rating": "integer" /* between 0 and 5, <= upper_rating */
+"customer_name": "string" /* optional sorting based on customer name */
+"sort_order": "string" /* either asc or desc */
+}
+```
+
+**Returns**:
+
+``` json
+{
+  "id": row.id, 
+  "account_name": row.account_name,
+  "rating": row.rating,
+  "description": row.description     
+}
+```
+
 ## 4. Admin Functions
 
 ### 4.1 Reset Reviews - `/admin/reset/{store_id}` (POST)
