@@ -1,3 +1,4 @@
+from enum import Enum
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
@@ -18,6 +19,9 @@ class Review(BaseModel):
 class Reply(BaseModel):
     name: str
     description: str
+
+MAXRATING = 5
+MINRATING = 0
     
 @router.get("/{store_id}")
 def get_ratings(store_id: int):
@@ -64,6 +68,8 @@ def create_review(store_id: int, new_review: Review):
     """
     Creates new thrift review in website.
     """
+    if new_review.rating > MAXRATING or new_review.rating < MINRATING:
+        return "invalid rating: rating must be between 0 and 5"
 
     with db.engine.begin() as connection:
         result = connection.execute(
@@ -98,3 +104,46 @@ def reply_review(id: int, new_reply: Reply):
         result = result.fetchone()
 
     return {"id":result.id, "review_id":result.review_id, "account_name": result.account_name, "description": result.description}
+
+class search_sort_order(str, Enum):
+    asc = "asc"
+    desc = "desc"   
+
+@router.get("/search/{store_id}")
+def sorted_reviews(store_id: int,
+                   upper_rating: int = 5, 
+                   lower_rating: int = 0, 
+                   customer_name: str = "",
+                   sort_order: search_sort_order = search_sort_order.desc):
+    reviews = []
+    if upper_rating > MAXRATING or lower_rating < MINRATING or lower_rating > upper_rating:
+        return "invalid rating paramaters"
+    with db.engine.begin() as connection:
+        search_query = (sqlalchemy.select(
+            db.reviews.c.id,
+            db.reviews.c.account_name,
+            db.reviews.c.rating,
+            db.reviews.c.description,
+        ).select_from(db.reviews)
+        .where(db.reviews.c.store_id == store_id)
+        .where(db.reviews.c.rating.between(lower_rating, upper_rating)))
+
+        # sort query based on asc or desc and name
+        if sort_order == search_sort_order.asc:
+            search_query = search_query.order_by(db.reviews.c.rating.asc())
+        if sort_order == search_sort_order.desc:
+            search_query = search_query.order_by(db.reviews.c.rating.desc())
+        if customer_name != "":
+            search_query = search_query.where(db.reviews.c.account_name.ilike(f"%{customer_name}%"))
+
+        result = connection.execute(search_query)
+    reviews = [
+        {
+            "id": row.id,
+            "account_name": row.account_name,
+            "rating": row.rating,
+            "description": row.description     
+        }
+        for row in result
+    ]
+    return reviews
