@@ -53,8 +53,8 @@ attribute must be either "name", "address", "type"
 
 ```json
 {
-  "attribute" : "string",
-  "new_attribute" : "string"
+  "attribute": "string",
+  "new_attribute": "string"
 }
 ```
 
@@ -82,21 +82,7 @@ A call to retrieve the list of reviews for a store.
 }
 ```
 
-### 2.2 View a specific review - `/reviews/rating/{id}` (GET)
-
-A call to retrieve a review for a thrift store.
-
-**Return**:
-
-```json
-{
-"rating": "integer" /* Between 1 and 5 */
-"name": "string" /* Account Name */
-"review": "string" /* User review of thrift store */
-}
-```
-
-### 2.3 Leave a review - `/reviews/create_review` (POST)
+### 2.2 Leave a review - `/reviews/create_review` (POST)
 
 A call to create a new review for a thrift store.
 
@@ -116,7 +102,35 @@ A call to create a new review for a thrift store.
 "OK"
 ```
 
-### 2.4 Reply to a review - `/reviews/{store_id}/{review_id}` (POST)
+### 2.3 View the ranking and rank of specfic store - `/reviews/average/{store_id}` (GET)
+
+A call to retrieve the average rating and rank of store based on rating
+
+**Return**:
+
+```json
+{
+"store_rank": "integer" /* Between 1 and 5 */
+"name": "string" /* Account Name */
+"average_rating": "float /* User review of thrift store */
+}
+```
+
+### 2.4 View a specific review - `/reviews/rating/{id}` (GET)
+
+A call to retrieve a review for a thrift store.
+
+**Return**:
+
+```json
+{
+"rating": "integer" /* Between 1 and 5 */
+"name": "string" /* Account Name */
+"review": "string" /* User review of thrift store */
+}
+```
+
+### 2.5 Reply to a review - `/reviews/{store_id}/{review_id}` (POST)
 
 A call to create a reply comment to review for a thrift store.
 
@@ -136,9 +150,9 @@ A call to create a reply comment to review for a thrift store.
 "OK"
 ```
 
-### 2.5 Sort Reviews - `/reviews/search/{store_id}` (GET)
+### 2.6 Sort Reviews - `/reviews/search/{store_id}` (GET)
 
-Filter reviews 
+Filter reviews
 
 **Request**:
 
@@ -154,13 +168,34 @@ Filter reviews
 
 **Returns**:
 
-``` json
+```json
 {
-  "id": row.id, 
+  "id": row.id,
   "account_name": row.account_name,
   "rating": row.rating,
-  "description": row.description     
+  "description": row.description
 }
+```
+
+### 2.7 Update Review - `/reviews/update/{review_id}` (POST)
+
+Update an existing review
+
+**Request**:
+
+```json
+{
+"review_id": "integer"
+"name": "string"
+"rating": "integer"
+"description": "string"
+}
+```
+
+**Returns**:
+
+```
+  "OK"
 ```
 
 ## 4. Admin Functions

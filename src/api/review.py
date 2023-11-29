@@ -178,3 +178,34 @@ def sorted_reviews(store_id: int,
         for row in result
     ]
     return reviews
+
+@router.post("/update/{review_id}")
+def update_review(review_id: int, updated_review: Review):
+    """
+    Update an existing review
+    """
+    with db.engine.begin() as connection:
+        # Check if the review with the given ID exists
+        existing_review = connection.execute(
+            sqlalchemy.text("SELECT * FROM reviews WHERE id = :review_id"), {"review_id": review_id}
+        ).fetchone()
+
+        if not existing_review:
+            return "Review not found"
+
+        # Update the review
+        connection.execute(
+            sqlalchemy.text(
+                """
+                UPDATE reviews
+                SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
+                """
+            ),
+            {
+                "review_id": review_id,
+                "account_name": updated_review.name,
+                "rating": updated_review.rating,
+                "description": updated_review.description,
+            },
+        )
+    return "OK"
