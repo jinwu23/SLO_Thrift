@@ -170,10 +170,10 @@ Filter reviews
 
 ```json
 {
-  "id": row.id,
-  "account_name": row.account_name,
-  "rating": row.rating,
-  "description": row.description
+  "id": "integer",
+  "account_name": "string",
+  "rating": "integer",
+  "description": "string"
 }
 ```
 
