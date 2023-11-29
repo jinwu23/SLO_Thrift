@@ -43,6 +43,37 @@ def get_ratings(store_id: int):
 
     return reviews
 
+@router.get("/average/{store_id}")
+def get_rating_averages(store_id: int):
+    """
+    Get the average rating and rank of store based on rating
+    """
+    with db.engine.begin() as connection:
+        stores = []
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                WITH rankedaverage AS (
+                    SELECT RANK() OVER (ORDER BY COALESCE(ROUND(AVG(reviews.rating), 2), 0) DESC) as store_rank, 
+                    stores.name as store_name, 
+                    COALESCE(ROUND(AVG(reviews.rating), 2), 0) as avg_rating,
+                    stores.id as sid
+                    FROM stores
+                    JOIN reviews ON reviews.store_id = stores.id
+                    GROUP BY sid, store_name
+                    ORDER BY avg_rating DESC
+                )
+                SELECT store_rank, store_name, avg_rating
+                FROM rankedaverage
+                WHERE sid = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        data = result.fetchone()
+    
+    return dict(store_rank=data.store_rank, store_name=data.store_name, average_rating=data.avg_rating)
+
 @router.get("/rating/{id}")
 def get_specific_rating(id: int):
     """
