@@ -62,3 +62,5 @@ This gives Client 1 inconsistencies in the data that they receive even though it
 Solution: 
 
 Increase the isolation level to repeatable reads
+
+![Screenshot 2023-11-28 233940](https://github.com/jinwu23/SLO_Thrift/assets/97060375/582ea6f4-2f14-49b1-bc4e-7c2e55818864)
