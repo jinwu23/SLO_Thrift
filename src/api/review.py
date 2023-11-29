@@ -77,22 +77,33 @@ def get_rating_averages(store_id: int):
 @router.get("/rating/{id}")
 def get_specific_rating(id: int):
     """
-    A review for a thrift store of reviews for a store.
+    A review for a thrift store or reviews for a store.
     """
     result = {}
+    with db.engine.connect().execution_options(isolation_level="READ COMMITTED") as connection:
+        trans = connection.begin()
 
-    with db.engine.begin() as connection:
+        try:
+            # Use "FOR UPDATE" to lock the selected rows
+            results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE id = :id FOR UPDATE"), {"id": id})
+            review = results.fetchone()
 
-        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE id = :id"), {"id": id})
-        review = results.fetchone()
-        if review:
-            result = {
-                "account": review.account_name,
-                "rating": review.rating,
-                "description": review.description
-            }
+            if review:
+                result = {
+                    "account": review.account_name,
+                    "rating": review.rating,
+                    "description": review.description
+                }
+
+            # Commit the transaction explicitly
+            trans.commit()
+
+        except Exception as e:
+            trans.rollback()
+            raise e
 
     return result
+
              
 @router.post("/{store_id}")
 def create_review(store_id: int, new_review: Review):
@@ -179,33 +190,42 @@ def sorted_reviews(store_id: int,
     ]
     return reviews
 
+
+
 @router.post("/update/{review_id}")
 def update_review(review_id: int, updated_review: Review):
     """
     Update an existing review
     """
-    with db.engine.begin() as connection:
-        # Check if the review with the given ID exists
-        existing_review = connection.execute(
-            sqlalchemy.text("SELECT * FROM reviews WHERE id = :review_id"), {"review_id": review_id}
-        ).fetchone()
+    connection = db.engine.connect().execution_options(isolation_level="READ COMMITTED")
 
-        if not existing_review:
-            return "Review not found"
+    try:
+        with connection.begin():
+            # Check if the review with the given ID exists
+            existing_review = connection.execute(
+                sqlalchemy.text("SELECT * FROM reviews WHERE id = :review_id FOR UPDATE"), {"review_id": review_id}
+            ).fetchone()
 
-        # Update the review
-        connection.execute(
-            sqlalchemy.text(
-                """
-                UPDATE reviews
-                SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
-                """
-            ),
-            {
-                "review_id": review_id,
-                "account_name": updated_review.name,
-                "rating": updated_review.rating,
-                "description": updated_review.description,
-            },
-        )
+            if not existing_review:
+                return "Review not found"
+
+            # Update the review
+            connection.execute(
+                sqlalchemy.text(
+                    """
+                    UPDATE reviews
+                    SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
+                    """
+                ),
+                {
+                    "review_id": review_id,
+                    "account_name": updated_review.name,
+                    "rating": updated_review.rating,
+                    "description": updated_review.description,
+                },
+            )
+
+    except Exception as e:
+        raise e
+
     return "OK"
