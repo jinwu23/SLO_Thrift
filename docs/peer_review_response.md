@@ -119,3 +119,106 @@ curl --location --request GET 'https://slo-thrift3.onrender.com/admin/reset/3' \
 Delete Store (again would, but cannot because it doesn't exist):
 OH WAIT THEY CAN'T BECAUSE ITS IMPOSSIBLE TO DELETE STORES. Mom's Shop and Pop will cause havoc forever!
 Ian - delete store endpoint has been created
+
+
+### Peer Review Response Nicholas Hotelling
+
+# Code Review Comments:
+
+1. reveiws.py - change "/reveiws/create_review" endpoint to a post to "/reveiws/{store_id}" This follows good practices more clearly.
+
+   **Refactored create_review to /reviews/{store_id}**
+
+2. reveiws.py - add comments to each endpoint describing what the inputs, outputs, and effects are (reply reveiw has no comments)
+   
+   **Added comments to endpoints**
+   
+3. stores.py - line 26: make querys be multiple lines for clarity! this is absurdly long.
+
+   **Long queries broken up**
+
+4. stores.py - get stores endpoint: instead of the for loop, use list comprehension  
+  
+   **Implemented List comprehension for endpoint**
+
+5. stores.py - line 46: make query multiple lines for clarity!  
+
+   **Made query more clear** 
+
+6. stores.py - line 74: make the parameter binding dictionary multiple lines for clear reading  
+
+   **Made dictionaries multiple lines**
+
+7. stores.py - update_name: should be a put not a post.  
+
+   **updated name**
+
+8. stores.py -update_address: should be a put not a post.  
+
+   **updated name**
+
+9. stores.py - update_type: should be a put not a post.  
+
+   **updated name**
+
+10. stores.py - update_name, update_address, update_type should all be one put endpoint at "/stores/{store_id}", where body defines the changes  
+
+    **combined all endpoints into one: put/stores/{store_id}**
+
+11. stores.py - line 26: if a store has no reviews, it will not be shown. This is because the join from stores on reveiws will remove any stores with no reveiws.  
+
+    **Changed join to left join** 
+
+12. stores.py - line 46: again, stores with no reveiws will not appear  
+
+    **Changed join to left join**
+
+# Schema/API Design Comments:
+
+1. stores: at least name, and possibly address and type, should not be nullable
+
+   **I think we only want physical stores, so we will keep the requirements**
+
+2. reveiws: account name should not be nullable
+   
+   **Changed to non nullable**
+   
+3. reveiws: store should not be nullable
+
+   **Changed to non nullable**
+
+4. reveiws: rating should not be nullable, and you could use a smaller int size for star based ratings
+  
+   **Changed to non nullable, int2 size**
+
+5. reveiws: rating should have a constraint: (1-5, 1-10, 1-100, etc)
+
+   **Added constraints (0-5)** 
+
+6. replies: reveiw, name, and description should not be nullable
+
+   **Changed to non nullable**
+
+7. api_spec: 1.3 (create store) should not require an id. id should be generated and returned by the system  
+
+   **id is not returned by system**
+
+8. api_spec 1.4, 1.5, 1.6 should all be one PUT endpoint where changes go in the body: PUT: "/stores/{store_id}"
+
+   **updated endpoints to a single one**
+
+9. api_spec 2.1/2.2: rating types are inconsistent, and they are inconsistent with the schema as well. is it an integer or a float?? 
+
+   **rating types are inconsistent because one is a user input of rating which must be between 0-5 and one is a calculated rating from database as an average so it is a float**
+
+10. api_spec: 2.3: creating a review should return the id of the reveiw 
+
+    **now returns id of review**
+
+11. general concern: following good practices, it makes sense to have most of the reveiws endpoints be a subset of /stores. example (PUT "/stores/{store_id}/reveiws" to create a reveiw for a store, GET "/stores/{store_id}/reveiws" to get all reveiws for a store)
+
+    **consolidated endpoints** 
+
+12. api_spec 2.2/2.3: no way for the user to tell the system which store they are interacting with.  
+
+    **2.2 asks for store_id**
