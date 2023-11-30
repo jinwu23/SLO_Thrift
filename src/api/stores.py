@@ -95,22 +95,22 @@ def create_store(new_store: Store):
               "type": new_store.type}])
         store_id = result.scalar()
         print(store_id)
-        print("trying to insert into reviews")
-        connection.execute(
-            sqlalchemy.text(
-                """
-                INSERT INTO reviews
-                (account_name, rating, description, store_id)
-                VALUES(:account_name, :rating, :description, :store_id);
-                COMMIT;
-                """
-            ),
-        {"account_name": "init", 
-         "rating": None, 
-         "description": "init", 
-         "store_id": store_id})
+        # print("trying to insert into reviews")
+        # connection.execute(
+        #     sqlalchemy.text(
+        #         """
+        #         INSERT INTO reviews
+        #         (account_name, rating, description, store_id)
+        #         VALUES(:account_name, :rating, :description, :store_id);
+        #         COMMIT;
+        #         """
+        #     ),
+        # {"account_name": "init", 
+        #  "rating": None, 
+        #  "description": "init", 
+        #  "store_id": store_id})
         
-    return "OK"
+    return f"New store created, id: {store_id}"
 
 @router.put("/{store_id}")
 def update_store(store_id: int, attribute: str, new_attribute: str):

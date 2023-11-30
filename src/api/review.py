@@ -22,7 +22,7 @@ class Reply(BaseModel):
 @router.get("/{store_id}")
 def get_ratings(store_id: int):
     """
-    Retrieve the list of reviews for a store.
+    Retrieve the list of reviews for a specific store.
     """
     with db.engine.begin() as connection:
 
@@ -42,7 +42,7 @@ def get_ratings(store_id: int):
 @router.get("/rating/{id}")
 def get_specific_rating(id: int):
     """
-    A review for a thrift store of reviews for a store.
+    Gets specific rating given rating_id
     """
     result = {}
 
@@ -64,6 +64,8 @@ def create_review(store_id: int, new_review: Review):
     """
     Creates new thrift review in website.
     """
+    if new_review.rating > 5 or new_review.rating < 0:
+        return "Invalid rating, rating must be between 0-5"
 
     with db.engine.begin() as connection:
         result = connection.execute(
@@ -82,7 +84,10 @@ def create_review(store_id: int, new_review: Review):
 
 @router.post("/{id}")
 def reply_review(id: int, new_reply: Reply):
-
+    """
+    Creates new thrift review in website.
+    """
+    
     with db.engine.begin() as connection:
         result = connection.execute(
             sqlalchemy.text(
