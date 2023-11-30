@@ -26,7 +26,7 @@ MINRATING = 0
 @router.get("/{store_id}")
 def get_ratings(store_id: int):
     """
-    Retrieve the list of reviews for a store.
+    Retrieve the list of reviews for a specific store.
     """
     with db.engine.begin() as connection:
 
@@ -77,7 +77,7 @@ def get_rating_averages(store_id: int):
 @router.get("/rating/{id}")
 def get_specific_rating(id: int):
     """
-    A review for a thrift store of reviews for a store.
+    Gets specific rating given rating_id
     """
     result = {}
 
@@ -119,7 +119,10 @@ def create_review(store_id: int, new_review: Review):
 
 @router.post("/{id}")
 def reply_review(id: int, new_reply: Reply):
-
+    """
+    Creates new thrift review in website.
+    """
+    
     with db.engine.begin() as connection:
         result = connection.execute(
             sqlalchemy.text(
