@@ -77,7 +77,7 @@ A call to retrieve the list of reviews for a store.
 ```json
 {
 "name": "string" /* Account Name */
-"rating": "float" /* Between 1 and 5 */
+"rating": "float" /* Between 0 and 5 */
 "review": "string" /* User review of thrift store */
 }
 ```
@@ -90,7 +90,7 @@ A call to create a new review for a thrift store.
 
 ```json
 {
-"rating": "integer" /* Between 1 and 5 */
+"rating": "integer" /* Between 0 and 5 */
 "name": "string" /* Account Name */
 "review": "string" /* User review of thrift store */
 }
