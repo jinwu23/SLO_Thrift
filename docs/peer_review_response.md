@@ -172,3 +172,53 @@ Ian - delete store endpoint has been created
 12. stores.py - line 46: again, stores with no reveiws will not appear  
 
     **Changed join to left join**
+
+# Schema/API Design Comments:
+
+1. stores: at least name, and possibly address and type, should not be nullable
+
+   **I think we only want physical stores, so we will keep the requirements**
+
+2. reveiws: account name should not be nullable
+   
+   **Changed to non nullable**
+   
+3. reveiws: store should not be nullable
+
+   **Changed to non nullable**
+
+4. reveiws: rating should not be nullable, and you could use a smaller int size for star based ratings
+  
+   **Changed to non nullable, int2 size**
+
+5. reveiws: rating should have a constraint: (1-5, 1-10, 1-100, etc)
+
+   **Added constraints (0-5)** 
+
+6. replies: reveiw, name, and description should not be nullable
+
+   **Changed to non nullable**
+
+7. api_spec: 1.3 (create store) should not require an id. id should be generated and returned by the system  
+
+   **id is not returned by system**
+
+8. api_spec 1.4, 1.5, 1.6 should all be one PUT endpoint where changes go in the body: PUT: "/stores/{store_id}"
+
+   **updated endpoints to a single one**
+
+9. api_spec 2.1/2.2: rating types are inconsistent, and they are inconsistent with the schema as well. is it an integer or a float?? 
+
+   **rating types are inconsistent because one is a user input of rating which must be between 0-5 and one is a calculated rating from database as an average so it is a float**
+
+10. api_spec: 2.3: creating a review should return the id of the reveiw 
+
+    **now returns id of review**
+
+11. general concern: following good practices, it makes sense to have most of the reveiws endpoints be a subset of /stores. example (PUT "/stores/{store_id}/reveiws" to create a reveiw for a store, GET "/stores/{store_id}/reveiws" to get all reveiws for a store)
+
+    **consolidated endpoints** 
+
+12. api_spec 2.2/2.3: no way for the user to tell the system which store they are interacting with.  
+
+    **2.2 asks for store_id**
