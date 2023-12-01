@@ -12,14 +12,11 @@ Consequence:
 
 The final state of the thrift store may not reflect all the intended modifications, and some updates may be lost. This can lead to incorrect information being stored or displayed.
 
-Solution: 
+Solution:
 
 Use READ COMMITTED isolation level to prevent dirty reads meaning that transactions will not see uncommitted changes made by other transactions. This helps in avoiding lost updates by ensuring that each transaction sees only committed changes.
 
-
 ![Screenshot 2023-11-28 233735](https://github.com/jinwu23/SLO_Thrift/assets/69867265/564ee13c-c4dc-45d2-82dd-048e9353fd19)
-
-
 
 Concurrent Store Updates: Read Skew
 
@@ -29,38 +26,34 @@ Client 1 wants the data about a specific store (name, type). Client 2 visited th
 
 Issue:
 
-Without proper concurrency control, Client 1 can get the name of the store before Client 2 updates both name and type. Client 1 then gets the type of the store and the type is the one Client 2 updated it with. 
+Without proper concurrency control, Client 1 can get the name of the store before Client 2 updates both name and type. Client 1 then gets the type of the store and the type is the one Client 2 updated it with.
 
 Consequence:
 
-This gives Client 1 false data on what the store actually has. 
+This gives Client 1 false data on what the store actually has.
 
-Solution: 
+Solution:
 
-Use a singular select statement to get all data about a store at once so concurrent updates do not falsify data in the middle of selections. 
-
+Use a singular select statement to get all data about a store at once so concurrent updates do not falsify data in the middle of selections.
 
 ![Screenshot 2023-11-28 233819](https://github.com/jinwu23/SLO_Thrift/assets/69867265/4e6996f3-c81c-4ed0-ac5f-793552fc134d)
-
-
-
 
 Concurrent Store Updates: Non Repeatable Read
 
 Scenario:
 
-Client 1 wants to see the average rating for the store with id 1. Client 2 just updated their review that they had for the store. Client 1 then checks the average rating again which returns different average rating 
+Client 1 wants to see the review with id 1. Client 2 just updated the review with id 1. Client 1 then checks the review again which returns a different rating from the one before
 
 Issue:
 
-Without proper concurrency control, Client 1 can get the average rating before Client 2 manipulates the average rating for the store. Client 1 then gets a different average rating when they try to read the average rating moments later. 
+Without proper concurrency control, Client 1 can get the rating before Client 2 manipulates the rating for the store. Client 1 then gets a different rating when they try to read the same rating.
 
 Consequence:
 
 This gives Client 1 inconsistencies in the data that they receive even though it's the same query
 
-Solution: 
+Solution:
 
-Increase the isolation level to repeatable reads
+Increase the isolation level to READ COMMIT and use FOR UPDATE to lock the rows before the update is commited
 
 ![Screenshot 2023-11-28 233940](https://github.com/jinwu23/SLO_Thrift/assets/97060375/582ea6f4-2f14-49b1-bc4e-7c2e55818864)
