@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from src.api import auth
 import sqlalchemy
 from src import database as db
+from sqlalchemy import text
 
 router = APIRouter(
     prefix="/reviews",
@@ -30,6 +31,16 @@ def get_ratings(store_id: int):
     """
     with db.engine.begin() as connection:
 
+        # # performance testing query
+        # performance_results = connection.execute(text(
+        #         """
+        #         EXPLAIN ANALYZE
+        #         SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id
+        #         """),{"store_id": store_id})
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
         results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id"), {"store_id": store_id})
         reviews = []
         for row in results:
@@ -49,7 +60,30 @@ def get_rating_averages(store_id: int):
     Get the average rating and rank of store based on rating
     """
     with db.engine.begin() as connection:
-        stores = []
+        stores = []        
+        
+        # # performance testing query
+        # performance_results = connection.execute(text(
+        #         """
+        #         EXPLAIN ANALYZE
+        #         WITH rankedaverage AS (
+        #             SELECT RANK() OVER (ORDER BY COALESCE(ROUND(AVG(reviews.rating), 2), 0) DESC) as store_rank, 
+        #             stores.name as store_name, 
+        #             COALESCE(ROUND(AVG(reviews.rating), 2), 0) as avg_rating,
+        #             stores.id as sid
+        #             FROM stores
+        #             JOIN reviews ON reviews.store_id = stores.id
+        #             GROUP BY sid, store_name
+        #             ORDER BY avg_rating DESC
+        #         )
+        #         SELECT store_rank, store_name, avg_rating
+        #         FROM rankedaverage
+        #         WHERE sid = :store_id
+        #         """),{"store_id": store_id})
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
         result = connection.execute(
             sqlalchemy.text(
                 """
@@ -84,6 +118,16 @@ def get_specific_rating(id: int):
         trans = connection.begin()
 
         try:
+
+            # # performance testing query 
+            # performance_results = connection.execute(text(
+            #     """
+            #     EXPLAIN ANALYZE
+            #     SELECT account_name, rating, description FROM reviews WHERE id = :id FOR UPDATE"""),{"id": id})
+            # query_plan = performance_results.fetchall()
+            # for row in query_plan:
+            #     print(row)
+
             # Use "FOR UPDATE" to lock the selected rows
             results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE id = :id FOR UPDATE"), {"id": id})
             review = results.fetchone()
@@ -105,7 +149,7 @@ def get_specific_rating(id: int):
     return result
 
              
-@router.post("/{store_id}")
+@router.post("/review/{store_id}")
 def create_review(store_id: int, new_review: Review):
     """
     Creates new thrift review in website.
@@ -114,6 +158,20 @@ def create_review(store_id: int, new_review: Review):
         return "invalid rating: rating must be between 0 and 5"
 
     with db.engine.begin() as connection:
+
+        # # performance testing query 
+        # performance_results = connection.execute(text(
+        #     """
+        #     EXPLAIN ANALYZE
+        #     INSERT INTO reviews
+        #     (account_name, rating, description, store_id)
+        #     VALUES(:account_name, :rating, :description, :store_id)
+        #     RETURNING id,  account_name, rating, description, store_id
+        #     """),[{"account_name": new_review.name, "rating": new_review.rating, "description": new_review.description, "store_id": store_id}])
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
         result = connection.execute(
             sqlalchemy.text(
                 """
@@ -128,13 +186,27 @@ def create_review(store_id: int, new_review: Review):
         result = result.fetchone()
     return {"id":result.id, "account_name": result.account_name, "rating": result.rating, "description": result.description, "store_id": result.store_id}
 
-@router.post("/{id}")
+@router.post("/reply/{id}")
 def reply_review(id: int, new_reply: Reply):
     """
     Creates new thrift review in website.
     """
     
     with db.engine.begin() as connection:
+
+        # # performance testing query 
+        # performance_results = connection.execute(text(
+        #     """
+        #     EXPLAIN ANALYZE
+        #     INSERT INTO replies
+        #         (review_id, account_name, description)
+        #         VALUES(:review_id, :account_name, :description)
+        #         RETURNING id, review_id, account_name, description
+        #     """),[{ "review_id": id, "account_name": new_reply.name, "description": new_reply.description}])
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
         result = connection.execute(
             sqlalchemy.text(
                 """
@@ -144,7 +216,7 @@ def reply_review(id: int, new_reply: Reply):
                 RETURNING id, review_id, account_name, description
                 """
             ),
-            [{ "review_id": id, "account_name": new_reply.name, "description": new_reply.description}]
+            { "review_id": id, "account_name": new_reply.name, "description": new_reply.description}
         )
         result = result.fetchone()
 
@@ -181,6 +253,20 @@ def sorted_reviews(store_id: int,
         if customer_name != "":
             search_query = search_query.where(db.reviews.c.account_name.ilike(f"%{customer_name}%"))
 
+        # # performance testing query
+        # performance_results = connection.execute(text(
+        #     """
+        #     EXPLAIN ANALYZE
+        #     SELECT id, account_name, rating, description
+        #     FROM reviews
+        #     WHERE reviews.store_id = :store_id and reviews.rating BETWEEN 4 and 5
+        #     ORDER BY reviews.rating desc
+        #     """
+        # ), {"store_id": store_id})
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
         result = connection.execute(search_query)
     reviews = [
         {
@@ -211,6 +297,23 @@ def update_review(review_id: int, updated_review: Review):
 
             if not existing_review:
                 return "Review not found"
+
+            # # performance testing query
+            # performance_results = connection.execute(text(
+            #     """
+            #         EXPLAIN ANALYZE
+            #         UPDATE reviews
+            #         SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
+            #         """
+            # ), {
+            #         "review_id": review_id,
+            #         "account_name": updated_review.name,
+            #         "rating": updated_review.rating,
+            #         "description": updated_review.description,
+            #     })
+            # query_plan = performance_results.fetchall()
+            # for row in query_plan:
+            #     print(row)
 
             # Update the review
             connection.execute(
