@@ -292,28 +292,28 @@ def update_review(review_id: int, updated_review: Review):
         with connection.begin():
             # Check if the review with the given ID exists
             existing_review = connection.execute(
-                sqlalchemy.text("EXPLAIN ANALYZE SELECT * FROM reviews WHERE id = :review_id FOR UPDATE"), {"review_id": review_id}
+                sqlalchemy.text("SELECT * FROM reviews WHERE id = :review_id FOR UPDATE"), {"review_id": review_id}
             ).fetchone()
 
             if not existing_review:
                 return "Review not found"
 
-            # performance testing query
-            performance_results = connection.execute(text(
-                """
-                    EXPLAIN ANALYZE
-                    UPDATE reviews
-                    SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
-                    """
-            ), {
-                    "review_id": review_id,
-                    "account_name": updated_review.name,
-                    "rating": updated_review.rating,
-                    "description": updated_review.description,
-                })
-            query_plan = performance_results.fetchall()
-            for row in query_plan:
-                print(row)
+            # # performance testing query
+            # performance_results = connection.execute(text(
+            #     """
+            #         EXPLAIN ANALYZE
+            #         UPDATE reviews
+            #         SET account_name = :account_name, rating = :rating, description = :description WHERE id = :review_id
+            #         """
+            # ), {
+            #         "review_id": review_id,
+            #         "account_name": updated_review.name,
+            #         "rating": updated_review.rating,
+            #         "description": updated_review.description,
+            #     })
+            # query_plan = performance_results.fetchall()
+            # for row in query_plan:
+            #     print(row)
 
             # Update the review
             connection.execute(
