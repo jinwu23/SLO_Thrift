@@ -41,11 +41,12 @@ def get_ratings(store_id: int):
         # for row in query_plan:
         #     print(row)
 
-        results = connection.execute(sqlalchemy.text("SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id"), {"store_id": store_id})
+        results = connection.execute(sqlalchemy.text("SELECT id, account_name, rating, description FROM reviews WHERE store_id = :store_id"), {"store_id": store_id})
         reviews = []
         for row in results:
             reviews.append(
-                {
+                {   
+                    "rating_id": row.id,
                     "account": row.account_name,
                     "rating": row.rating,
                     "description": row.description
@@ -84,6 +85,20 @@ def get_rating_averages(store_id: int):
         # for row in query_plan:
         #     print(row)
 
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+
         result = connection.execute(
             sqlalchemy.text(
                 """
@@ -93,7 +108,7 @@ def get_rating_averages(store_id: int):
                     COALESCE(ROUND(AVG(reviews.rating), 2), 0) as avg_rating,
                     stores.id as sid
                     FROM stores
-                    JOIN reviews ON reviews.store_id = stores.id
+                    LEFT JOIN reviews ON reviews.store_id = stores.id
                     GROUP BY sid, store_name
                     ORDER BY avg_rating DESC
                 )
@@ -172,6 +187,21 @@ def create_review(store_id: int, new_review: Review):
         # for row in query_plan:
         #     print(row)
 
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+
+
         result = connection.execute(
             sqlalchemy.text(
                 """
@@ -206,6 +236,20 @@ def reply_review(id: int, new_reply: Reply):
         # query_plan = performance_results.fetchall()
         # for row in query_plan:
         #     print(row)
+
+        # check if review exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM reviews
+                WHERE id = :review_id
+                """
+            ),
+            {"review_id": id}
+        )
+        if result.scalar_one() == 0:
+            return "Review does not exist"
 
         result = connection.execute(
             sqlalchemy.text(
