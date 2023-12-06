@@ -87,5 +87,19 @@ def update_descriptions(store_id: int, desc: Description):
         # for row in query_plan:
         #     print(row)
         
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+
         connection.execute(sqlalchemy.text("UPDATE stores SET type=:desc WHERE id=:id"), {"desc": desc.description, "id": store_id})
     return "OK"

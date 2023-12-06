@@ -53,7 +53,7 @@ def get_stores():
                     stores.name as name, 
                     stores.address as address, 
                     stores.type as type, 
-                    AVG(reviews.rating) as rating 
+                    coalesce(AVG(reviews.rating), 0) as rating 
                 FROM stores 
                 LEFT JOIN reviews on reviews.store_id = stores.id 
                 GROUP BY stores.id
