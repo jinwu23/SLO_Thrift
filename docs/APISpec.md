@@ -220,20 +220,3 @@ A call to reset specific review will delete one specific review
 "OK"
 ```
 
-### 4.3 Update Descriptions - `/admin/update/description/{store_id}` (POST)
-
-A call to update descriptions for a store will add the admin description to database
-
-**Request**:
-
-```param
-{
-"descriptions": {description: "input"} /* dictionary of description to user input */
-}
-```
-
-**Returns**:
-
-```
-"OK"
-```
