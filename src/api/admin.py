@@ -70,7 +70,7 @@ def delete_review(review_id: int):
     return "OK"
 
 
-@router.post("/update/description/{store_id}")
+@router.put("/update/description/{store_id}")
 def update_descriptions(store_id: int, desc: Description):
     """ 
     a call to update descriptions for a store will add the admin description

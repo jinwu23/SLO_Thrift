@@ -325,7 +325,7 @@ def sorted_reviews(store_id: int,
 
 
 
-@router.post("/update/{review_id}")
+@router.put("/update/{review_id}")
 def update_review(review_id: int, updated_review: Review):
     """
     Update an existing review
