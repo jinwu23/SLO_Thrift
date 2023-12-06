@@ -331,6 +331,8 @@ def update_review(review_id: int, updated_review: Review):
     Update an existing review
     """
     connection = db.engine.connect().execution_options(isolation_level="READ COMMITTED")
+    if new_review.rating > MAXRATING or new_review.rating < MINRATING:
+        return "invalid rating: rating must be between 0 and 5"
 
     try:
         with connection.begin():
