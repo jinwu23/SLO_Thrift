@@ -180,20 +180,6 @@ def update_store(store_id: int, attribute: str, new_attribute: str):
     Updates the name, address, or type of a specific store
     """
 
-    # check if store exists
-    result = connection.execute(
-        sqlalchemy.text(
-            """
-            SELECT count(*)
-            FROM stores
-            WHERE id = :store_id
-            """
-        ),
-        {"store_id": store_id}
-    )
-    if result.scalar_one() == 0:
-        return "Store does not exist"
-
     if attribute not in ("name", "address", "type"):
         return "Attribute must be either: name, address, or type"
     if attribute == "name":
@@ -229,6 +215,20 @@ def update_store(store_id: int, attribute: str, new_attribute: str):
     #         print(row)
 
     with db.engine.begin() as connection:
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+
         connection.execute(
             sqlalchemy.text(query),
             [{"id": store_id, "attribute": attribute, "new_attribute": new_attribute}]
