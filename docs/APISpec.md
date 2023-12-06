@@ -177,7 +177,7 @@ Filter reviews
 }
 ```
 
-### 2.7 Update Review - `/reviews/update/{review_id}` (POST)
+### 2.7 Update Review - `/reviews/update/{review_id}` (PUT)
 
 Update an existing review
 
@@ -200,7 +200,7 @@ Update an existing review
 
 ## 4. Admin Functions
 
-### 4.1 Reset Reviews - `/admin/reset/{store_id}` (POST)
+### 4.1 Reset Reviews - `/admin/reset/{store_id}` (DELETE)
 
 A call to reset reviews will delete all reviews under a specific store
 
@@ -210,9 +210,9 @@ A call to reset reviews will delete all reviews under a specific store
 "OK"
 ```
 
-### 4.2 Reset Specific Review - `/admin/reset/{review_id}` (POST)
+### 4.2 Reset - `/admin/reset/{store_id}` (DELETE)
 
-A call to reset specific review will delete one specific review
+A call to reset all reviews for a particular store
 
 **Returns**:
 
@@ -220,17 +220,9 @@ A call to reset specific review will delete one specific review
 "OK"
 ```
 
-### 4.3 Update Descriptions - `/admin/update/description/{store_id}` (POST)
+### 4.3 Reset Specific Review - `/admin/reset/{review_id}` (DELETE)
 
-A call to update descriptions for a store will add the admin description to database
-
-**Request**:
-
-```param
-{
-"descriptions": {description: "input"} /* dictionary of description to user input */
-}
-```
+A call to reset specific review will delete one specific review
 
 **Returns**:
 
