@@ -28,6 +28,20 @@ def delete_store(store_id: int):
         # for row in query_plan:
         #     print(row)
 
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+        
         connection.execute(sqlalchemy.text("DELETE FROM stores where id=:id"),{"id":store_id})
     return "OK"
 
@@ -45,6 +59,20 @@ def reset(store_id: int):
         # query_plan = performance_results.fetchall()
         # for row in query_plan:
         #     print(row)
+
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
 
         connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE store_id=:id"), {"id": store_id})
 
@@ -65,41 +93,20 @@ def delete_review(review_id: int):
         # query_plan = performance_results.fetchall()
         # for row in query_plan:
         #     print(row)
-        
-        connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE id=:rev_id"), {"rev_id": review_id})
-    return "OK"
 
-
-@router.put("/update/description/{store_id}")
-def update_descriptions(store_id: int, desc: Description):
-    """ 
-    a call to update descriptions for a store will add the admin description
-    to database
-    """
-
-    with db.engine.begin() as connection: 
-
-        # # performance testing query
-        # performance_results = connection.execute(text(
-        #     "EXPLAIN ANALYZE UPDATE stores SET type=:desc WHERE id=:id"
-        # ), {"desc": desc.description, "id": store_id})
-        # query_plan = performance_results.fetchall()
-        # for row in query_plan:
-        #     print(row)
-        
-        # check if store exists
+        # check if review exists
         result = connection.execute(
             sqlalchemy.text(
                 """
                 SELECT count(*)
-                FROM stores
-                WHERE id = :store_id
+                FROM reviews
+                WHERE id = :review_id
                 """
             ),
-            {"store_id": store_id}
+            {"review_id": review_id}
         )
         if result.scalar_one() == 0:
-            return "Store does not exist"
+            return "Review does not exist"
 
-        connection.execute(sqlalchemy.text("UPDATE stores SET type=:desc WHERE id=:id"), {"desc": desc.description, "id": store_id})
+        connection.execute(sqlalchemy.text("DELETE FROM reviews WHERE id=:rev_id"), {"rev_id": review_id})
     return "OK"
