@@ -301,38 +301,6 @@ def reply_review(id: int, new_reply: Reply):
 
     return {"id":result.id, "review_id":result.review_id, "account_name": result.account_name, "description": result.description}
 
-@router.get("/replies/all")
-def get_replies():
-    """
-    Retrieve the list of replies
-    """
-    with db.engine.begin() as connection:
-
-        # # performance testing query
-        # performance_results = connection.execute(text(
-        #         """
-        #         EXPLAIN ANALYZE
-        #         SELECT account_name, rating, description FROM reviews WHERE store_id = :store_id
-        #         """),{"store_id": store_id})
-        # query_plan = performance_results.fetchall()
-        # for row in query_plan:
-        #     print(row)
-
-        results = connection.execute(sqlalchemy.text("SELECT id, review_id, account_name, description FROM replies"))
-        results = results.fetchall()
-        replies = []
-        for row in results:
-            replies.append(
-                {   
-                    "id": row.id,
-                    "review_id": row.review_id,
-                    "account_name": row.account_name,
-                    "description": row.description
-                }
-            )
-
-    return replies
-
 class search_sort_order(str, Enum):
     asc = "asc"
     desc = "desc"   
