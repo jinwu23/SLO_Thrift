@@ -1,10 +1,11 @@
+from enum import Enum
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from src.api import auth
 import math
 import sqlalchemy
 from src import database as db
-from sqlalchemy import text
+from sqlalchemy import asc, desc, text, func
 
 router = APIRouter(
     prefix="/stores",
@@ -234,3 +235,53 @@ def update_store(store_id: int, attribute: str, new_attribute: str):
             [{"id": store_id, "attribute": attribute, "new_attribute": new_attribute}]
         )
     return "OK"
+
+class search_sort_order(str, Enum):
+    asc = "asc"
+    desc = "desc"   
+
+class search_sort_options(str, Enum):
+    rating = "average_rating"
+    name = "name"
+    address = "address"
+    type = "type"
+
+@router.get("/search/{store_id}")
+def sorted_stores(
+                    sort_options: search_sort_options = search_sort_options.rating,
+                    sort_order: search_sort_order = search_sort_order.desc
+                    ):
+    with db.engine.begin() as connection:
+        search_query = (
+            sqlalchemy.select(
+                db.stores.c.id,
+                db.stores.c.name,
+                db.stores.c.address,
+                db.stores.c.type,
+                func.round(func.coalesce(func.avg(db.reviews.c.rating), 0), 2).label('average_rating')
+            )
+            .select_from(db.stores)
+            .outerjoin(db.reviews, db.stores.c.id == db.reviews.c.store_id)
+            .group_by(
+                db.stores.c.id,
+            )
+        )
+
+        # sort query based on asc or desc and name
+        if sort_order == search_sort_order.asc:
+            search_query = search_query.order_by(asc(sort_options))
+        if sort_order == search_sort_order.desc:
+            search_query = search_query.order_by(desc(sort_options))
+
+        result = connection.execute(search_query)
+    reviews = [
+        {
+            "id": row.id,
+            "name": row.name,
+            "address": row.address,
+            "type": row.type,
+            "average_rating": row.average_rating
+        }
+        for row in result
+    ]
+    return reviews

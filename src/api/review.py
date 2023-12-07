@@ -55,6 +55,41 @@ def get_ratings(store_id: int):
 
     return reviews
 
+@router.get("/replies/{rating_id}")
+def get_replies(review_id: int):
+    """
+    Retrieve the list of replies for a specific rating
+    """
+    with db.engine.begin() as connection:
+
+        # check if review exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM reviews
+                WHERE id = :review_id
+                """
+            ),
+            {"review_id": review_id}
+        )
+        if result.scalar_one() == 0:
+            return "Review does not exist"
+
+        results = connection.execute(sqlalchemy.text("SELECT id, review_id, account_name, description FROM replies WHERE review_id = :review_id"), {"review_id": review_id})
+        replies = []
+        for row in results:
+            replies.append(
+                {   
+                    "id": row.id,
+                    "review_id": row.review_id,
+                    "account": row.account_name,
+                    "description": row.description
+                }
+            )
+
+    return replies
+
 @router.get("/average/{store_id}")
 def get_rating_averages(store_id: int):
     """
