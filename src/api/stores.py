@@ -285,3 +285,70 @@ def sorted_stores(
         for row in result
     ]
     return reviews
+
+@router.get("/rank/{store_id}")
+def get_store_rank(store_id: int):
+    """
+    Get the average rating and rank of store based on rating
+    """
+    with db.engine.begin() as connection:      
+        
+        # # performance testing query
+        # performance_results = connection.execute(text(
+        #         """
+        #         EXPLAIN ANALYZE
+        #         WITH rankedaverage AS (
+        #             SELECT RANK() OVER (ORDER BY COALESCE(ROUND(AVG(reviews.rating), 2), 0) DESC) as store_rank, 
+        #             stores.name as store_name, 
+        #             COALESCE(ROUND(AVG(reviews.rating), 2), 0) as avg_rating,
+        #             stores.id as sid
+        #             FROM stores
+        #             JOIN reviews ON reviews.store_id = stores.id
+        #             GROUP BY sid, store_name
+        #             ORDER BY avg_rating DESC
+        #         )
+        #         SELECT store_rank, store_name, avg_rating
+        #         FROM rankedaverage
+        #         WHERE sid = :store_id
+        #         """),{"store_id": store_id})
+        # query_plan = performance_results.fetchall()
+        # for row in query_plan:
+        #     print(row)
+
+        # check if store exists
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT count(*)
+                FROM stores
+                WHERE id = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        if result.scalar_one() == 0:
+            return "Store does not exist"
+
+        result = connection.execute(
+            sqlalchemy.text(
+                """
+                WITH rankedaverage AS (
+                    SELECT RANK() OVER (ORDER BY COALESCE(ROUND(AVG(reviews.rating), 2), 0) DESC) as store_rank, 
+                    stores.name as store_name, 
+                    COALESCE(ROUND(AVG(reviews.rating), 2), 0) as avg_rating,
+                    stores.id as sid
+                    FROM stores
+                    LEFT JOIN reviews ON reviews.store_id = stores.id
+                    GROUP BY sid, store_name
+                    ORDER BY avg_rating DESC
+                )
+                SELECT store_rank, store_name, avg_rating
+                FROM rankedaverage
+                WHERE sid = :store_id
+                """
+            ),
+            {"store_id": store_id}
+        )
+        data = result.fetchone()
+    
+    return dict(store_rank=data.store_rank, store_name=data.store_name, average_rating=data.avg_rating)
