@@ -54,7 +54,7 @@ def get_stores():
                     stores.name as name, 
                     stores.address as address, 
                     stores.type as type, 
-                    round(coalesce(AVG(reviews.rating), 0),2) as rating 
+                    round(coalesce(AVG(reviews.rating), 0), 2) as rating 
                 FROM stores 
                 LEFT JOIN reviews on reviews.store_id = stores.id 
                 GROUP BY stores.id
@@ -100,7 +100,7 @@ def get_specific_store(id: int):
                 """
                 SELECT stores.id, stores.name, 
                 stores.address, stores.type, 
-                round(AVG(reviews.rating), 2)as rating FROM stores 
+                round(coalesce(AVG(reviews.rating), 0), 2) as rating FROM stores 
                 LEFT JOIN reviews on reviews.store_id = stores.id 
                 WHERE stores.id = :id 
                 GROUP BY stores.id
