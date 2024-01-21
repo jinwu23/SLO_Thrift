@@ -222,3 +222,57 @@ Ian - delete store endpoint has been created
 12. api_spec 2.2/2.3: no way for the user to tell the system which store they are interacting with.  
 
     **2.2 asks for store_id**
+
+### Peer Review Response Maxwell Silver
+1. /create_store should return the new store_id instead of http 200 "OK". **Fixed**
+
+2. Standardize your returns. Create endpoints should all return the new id and updates should all return "OK".**Fixed**
+
+3. Validation in your endpoints to check for required SQL fields. **Fixed**
+
+4. Have separate return statements inside and outside of your with clause, so in case transaction fails you can return http 400. **Added Test cases for failing transactions**
+
+5. Improve error handling overall. For some of your endpoints, the user cannot tell if there are just no records in the db, or if there was an error.**Fixed**
+
+6. Use ORM to make queries more readable and extensible.**Easier to understand SQL statements, but we structured them more clearly.**
+
+7. Add logging to more easily diagnose bugs.
+
+8. Add docstring to POST /reviews/{id}**Added docstrings**
+
+9. Add some form of unit or integration testing to your project. **Not Code Review, more of suggestion, but will work on it.**
+
+10. Use linting and max line length to ensure readability.**Adjusted line lengths**
+
+11. You set up the ORM tables in database.py but it is never used. **Will get rid of if not used.**
+
+12. /admin should have a different permission level than the rest of your APIs because of its delete capabilities. Right now they all depend upon the same api key.
+
+
+Stores
+1. For stores, do not let name, address, and type be nullable fields. **updated**
+
+2. A unique constraint can be added to name to ensure that there aren't duplicate records for the same store.**stores can have same name, but I understand the duplicates.**
+
+3. Depending on what you mean type to be, if it is only from a predefined set of values, you can use enum instead of text.**Want to leave open for any.**
+
+Reviews
+4. Don't let account_name, rating, and description be nullable.**Fixed**
+
+5. Don't let a foreign key be nullable.**Fixed**
+
+6. Rating doesn't have to be a bigint if it's going to be like a range of 1-5 or 1-10. **Fixed**
+
+7. Set default values if appropriate. **Nothing should really have default value.**
+
+Replies
+8. Don't let review_id, account_name, and description be nullable.**Fixed**
+
+9. Reviews are able to be deleted by DELETE /review/{review_id}, so consider adding cascading delete to your replies that reference the deleted review.
+
+10. You can add a users or accounts table that contains account_name, so you can normalize your data.
+
+API
+11. You can add user auth and admin auth if you want there to be different permission levels within your app.
+
+12. You could add a delete operation to be able to completely delete a store.
