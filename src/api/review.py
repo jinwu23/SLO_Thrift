@@ -160,6 +160,9 @@ def sorted_reviews(store_id: int,
                    lower_rating: int = 0, 
                    customer_name: str = "",
                    sort_order: search_sort_order = search_sort_order.desc):
+    """
+    Sorts the reviews listed.
+    """
     reviews = []
     if upper_rating > MAXRATING or lower_rating < MINRATING or lower_rating > upper_rating:
         return "invalid rating paramaters"
